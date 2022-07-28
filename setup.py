@@ -8,6 +8,7 @@ import pandas as pd
 import sys
 # adding scripts to the system path
 sys.path.insert(0, 'scripts/')
+import pickle
 
 from scorer import BM25, Query
 from stopwords import STOPWORDS
@@ -74,16 +75,25 @@ def setup():
     # Read all data into a pandas dataframe
     ALL_DATA_DF = read_all_data(path, filename, NROWS)
 
-    # Create corpus with lyrics, tokenize lyrics before adding to corpus.
-    corpus = [
-        re.sub(r"[^a-zA-Z0-9_ ]", "", row.LYRICS).split(" ")
-        for row in ALL_DATA_DF.itertuples()
-    ]
+    corpus = []
 
-    corpus = [
-        [lyric.lower() for lyric in lyrics if lyric.lower() not in STOPWORDS]
-        for lyrics in corpus
-    ]
+    if os.path.exists('corpus'):
+        with open('corpus', 'rb') as cfile:
+            corpus = pickle.load(cfile)
+
+    else:
+        # Create corpus with lyrics, tokenize lyrics before adding to corpus.
+        corpus = [
+            re.sub(r"[^a-zA-Z0-9_ ]", "", row.LYRICS).split(" ")
+            for row in ALL_DATA_DF.itertuples()
+        ]
+
+        corpus = [
+            [lyric.lower() for lyric in lyrics if lyric.lower() not in STOPWORDS]
+            for lyrics in corpus
+        ]
+        with open('corpus', 'wb') as cfile:
+            pickle.dump(corpus, cfile)
 
     SCORER = BM25()
     SCORER.fit(corpus)
