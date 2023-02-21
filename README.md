@@ -1,7 +1,7 @@
 # lyric retriever
 
 Hosted on AWS
-http://lyricretriever-env.eba-ftppkhi3.us-east-2.elasticbeanstalk.com/
+http://3.20.71.118:5000/
 
 ## How to setup the environment to execute the code
 1. Clone this repository
